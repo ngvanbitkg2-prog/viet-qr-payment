@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  username     String        @unique
+  password     String
+  balance      Int           @default(0)
+  role         String        @default("USER")
+  createdAt    DateTime      @default(now())
+  transactions Transaction[]
+  adminLogs    AdminLog[]
+}
+
+model Bank {
+  id            Int           @id @default(autoincrement())
+  bankCode      String
+  bankName      String
+  accountNumber String
+  accountName   String
+  isActive      Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  transactions  Transaction[]
+}
+
+model Transaction {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  bankId          Int
+  amount          Int
+  points          Int
+  transferContent String
+  status          String    @default("PENDING")
+  createdAt       DateTime  @default(now())
+  confirmedAt     DateTime?
+  user            User      @relation(fields: [userId], references: [id])
+  bank            Bank      @relation(fields: [bankId], references: [id])
+
+  @@index([userId])
+  @@index([bankId])
+}
+
+model AdminLog {
+  id        Int      @id @default(autoincrement())
+  adminId   Int
+  action    String
+  data      String?
+  createdAt DateTime @default(now())
+  admin     User     @relation(fields: [adminId], references: [id])
+
+  @@index([adminId])
+}
