@@ -5,6 +5,6 @@ const router = Router();
 
 // Public routes - no auth required
 router.post('/create-qr', createQR);
-router.get('/transactions', getMyTransactions);
+router.get('/my-transactions', getMyTransactions);
 
 export default router;
